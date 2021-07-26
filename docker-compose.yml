@@ -1,0 +1,26 @@
+version: '2.1'
+services:
+    postgres:
+        restart: always
+        image: postgres:10
+        env_file:
+            - db-vars.env
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+    app:
+        restart: always
+        build: .
+        tty: true   # output za testovite, probaj bez 
+        ports:    
+            - 5000:5000
+        volumes:
+            - .:/project
+        depends_on: 
+            - postgres
+        # entrypoint: ["python", "app.py"]
+
+volumes:
+  db-data:
+    driver: local
