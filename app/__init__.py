@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -10,7 +9,7 @@ ma = Marshmallow()
 def init_app(testing=False):
 
     """Initialize the core application from a config file in the /instance folder."""
-    app = Flask(__name__, instance_relative_config=True)    # moze i samo so file (bez instance folderov)
+    app = Flask(__name__, instance_relative_config=True)    
 
     if testing :
         app.config.from_pyfile('config_testing.py')
@@ -23,8 +22,7 @@ def init_app(testing=False):
 
     # Register within app context
     with app.app_context():
-        from . import routes    # da probam sto kje se sluci na nova baza ako go nemam ovoj import (probably nema da gi fati site modeli)
-        db.create_all()         # ako prethodnovo e true, probaj eden po eden modelive da gi importnesh (from models..)
-
+        from . import routes   
+        db.create_all()         
 
         return app

@@ -71,6 +71,9 @@ class ProductService:
         """
 
         updated_prod = Product.query.get(id)
+        if updated_prod is None:
+            return None
+            
         updated_prod.name = product['name']
         updated_prod.description = product['description']
         updated_prod.price = product['price']
@@ -91,6 +94,9 @@ class ProductService:
             [obj]: [the deleted product object in json-format]
         """
         product = Product.query.get(id)
+
+        if product is None:
+            return None
         
         db.session.delete(product)
         db.session.commit()
