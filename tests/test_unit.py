@@ -4,6 +4,8 @@ import pytest
 # da dodadam pytest marks -> za da se izvrshuvaat zasebno (moze i so parametar pytest test_1)
 # so pytest -m birame koi tests (so koi marks t.e)
 
+# pytest conftest file 
+
 @pytest.fixture(scope="session")        # so scope=function ne raboti, investigate why
 def client():
     app = init_app(testing=True)
