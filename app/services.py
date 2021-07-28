@@ -81,7 +81,7 @@ class ProductService:
             updated_prod.price = product.price
         if product.quantity is not None:
             updated_prod.quantity = product.quantity
-            
+
         db.session.commit()
 
         return product_schema.jsonify(updated_prod)
@@ -105,3 +105,21 @@ class ProductService:
         db.session.commit()
 
         return product_schema.jsonify(product)
+
+
+    def buy_products(self, products : list):
+        for product in products:
+            updated_prod = Product.query.get(product['id'])
+
+            if updated_prod is None:
+                db.session.rollback()
+                return 404
+
+            if updated_prod.quantity < product['quantity']:
+                db.session.rollback()
+                return 400
+            updated_prod.quantity -= product['quantity']
+            
+        db.session.commit()
+
+        return 200

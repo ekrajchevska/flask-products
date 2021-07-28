@@ -1,6 +1,7 @@
 import re
 from flask import request, jsonify
 from flask import current_app as app
+from flask.wrappers import Response
 from .models import *
 from .services import *
 
@@ -70,6 +71,18 @@ def delete_product(id : int):
         raise InvalidAPIUsage("No product with such ID.", 404)
     
     return del_product
+
+
+@app.route('/buy-products', methods=['POST'])
+def buy_products():
+    bucket = list(request.get_json())
+    code = product_service.buy_products(bucket)
+    if code == 404:
+        raise InvalidAPIUsage("No product with such ID.", 404)
+    elif code == 400:
+        raise InvalidAPIUsage("Order exceeds available quantity", 400)
+    
+    return Response(status=200)
 
 
 
