@@ -1,4 +1,4 @@
-from .models import Product, product_schema, products_schema
+from .models import *
 from app import db
 
 # da ima transactional metod
@@ -14,7 +14,7 @@ from app import db
 
 class ProductService:
 
-    def create_product(self, product : dict):
+    def create_product(self, product : ProductDTO):
         """[summary]
 
         Args:
@@ -24,8 +24,7 @@ class ProductService:
             obj: [the newly created object in json-format]
         """
 
-        new_product = Product(product['name'], product['description'], 
-        product['price'], product['quantity'])
+        new_product = Product(product.name, product.description, product.price, product.quantity)
 
         db.session.add(new_product)
         db.session.commit()
@@ -58,7 +57,7 @@ class ProductService:
         return product_schema.jsonify(product)
 
     
-    def update_product(self, id : int, product : dict):
+    def update_product(self, id : int, product : ProductDTO):
         """[summary]
 
         Args:
@@ -74,11 +73,15 @@ class ProductService:
         if updated_prod is None:
             return None
             
-        updated_prod.name = product['name']
-        updated_prod.description = product['description']
-        updated_prod.price = product['price']
-        updated_prod.quantity = product['quantity']
-
+        if product.name is not None:
+            updated_prod.name = product.name
+        if product.description is not None:
+            updated_prod.description = product.description
+        if product.price is not None:
+            updated_prod.price = product.price
+        if product.quantity is not None:
+            updated_prod.quantity = product.quantity
+            
         db.session.commit()
 
         return product_schema.jsonify(updated_prod)

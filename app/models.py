@@ -1,5 +1,6 @@
 from app import db
 from app import ma
+from dataclasses import dataclass
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,3 +21,11 @@ class ProductSchema(ma.Schema):
 
 product_schema = ProductSchema()
 products_schema = ProductSchema(many=True)
+
+
+@dataclass
+class ProductDTO:
+    name : str
+    description : str
+    price : float
+    quantity : int

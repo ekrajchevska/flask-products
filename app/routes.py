@@ -1,10 +1,9 @@
+import re
 from flask import request, jsonify
 from flask import current_app as app
 from .models import *
 from .services import *
 
-
-# EXCEPTION HANDLING (tuka catch), so klasi obvsly
 
 product_service = ProductService()
 
@@ -13,19 +12,15 @@ def hello():
     return {'hello' : 'world'}
 
 @app.route('/create', methods=['POST'])
-def create():   # (product : ProductDTO)
+def create():   
 
     try:
-        name = request.json['name']     # da pobaram dali ima nekoj mehanizam za direktno da se zeme objektot (ProductDTO object)
-        description = request.json['description']   # bez manuelno mapiranje
-        price = request.json['price']
-        quantity = request.json['quantity']
+        product_dto = ProductDTO(request.json['name'], request.json['description'], 
+        request.json['price'], request.json['quantity'])        # request.get_json ?
+        new_product = product_service.create_product(product_dto)
 
     except (KeyError):
         raise InvalidAPIUsage("Invalid product creation. Please specify all fields.", 400)
-
-    product_dict = {"name": name, "description": description, "price" : price, "quantity" : quantity}
-    new_product = product_service.create_product(product_dict)
 
     return new_product
 
@@ -47,18 +42,19 @@ def get_product_by_id(id : int):
 @app.route('/product/<int:id>', methods=['PUT'])
 def update_product(id : int):
 
-    try:
-        name = request.json['name']     # ista zabeleska
+    data = request.get_json()
+    name = description = price = quantity = None
+    if 'name' in data:
+        name = request.json['name']
+    if 'description' in data:
         description = request.json['description']
+    if 'price' in data:
         price = request.json['price']
+    if 'quantity' in data:
         quantity = request.json['quantity']
 
-    except (KeyError):
-        raise InvalidAPIUsage("Please specify all attributes.", 400)
-
-    product_dict = {'name' : name, 'description' : description, 'price' : price, 'quantity' : quantity}
-
-    updated = product_service.update_product(id, product_dict)
+    product_dto = ProductDTO(name, description, price, quantity) 
+    updated = product_service.update_product(id, product_dto)
 
     if updated is None:
         raise InvalidAPIUsage("No product with such ID.", 404)
