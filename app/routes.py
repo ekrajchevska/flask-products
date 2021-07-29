@@ -55,32 +55,32 @@ def update_product(id : int):
         quantity = request.json['quantity']
 
     product_dto = ProductDTO(name, description, price, quantity) 
-    updated = product_service.update_product(id, product_dto)
-
-    if updated is None:
-        raise InvalidAPIUsage("No product with such ID.", 404)
+    try:
+        updated = product_service.update_product(id, product_dto)
+    except ProductNotFoundException as e:
+        raise InvalidAPIUsage(e.message, e.status_code)
     
     return updated
 
 
 @app.route('/product/<int:id>', methods=['DELETE'])
 def delete_product(id : int):
-    del_product = product_service.delete_product(id)
+    try:
+        del_product = product_service.delete_product(id)
+    except ProductNotFoundException as e:
+        raise InvalidAPIUsage(e.message, e.status_code)
 
-    if del_product is None:
-        raise InvalidAPIUsage("No product with such ID.", 404)
-    
     return del_product
 
 
 @app.route('/buy-products', methods=['POST'])
 def buy_products():
     bucket = list(request.get_json())
-    code = product_service.buy_products(bucket)
-    if code == 404:
-        raise InvalidAPIUsage("No product with such ID.", 404)
-    elif code == 400:
-        raise InvalidAPIUsage("Order exceeds available quantity", 400)
+    try:
+        product_service.buy_products(bucket)
+    
+    except (ProductNotFoundException, InvalidQuantityException) as e:
+        raise InvalidAPIUsage(e.message, e.status_code)
     
     return Response(status=200)
 
@@ -105,4 +105,4 @@ class InvalidAPIUsage(Exception):
 
 @app.errorhandler(InvalidAPIUsage)
 def invalid_api_usage(e):
-    return jsonify(e.to_dict())
+    return jsonify(e.to_dict()), e.status_code

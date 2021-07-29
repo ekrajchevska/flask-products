@@ -71,7 +71,7 @@ class ProductService:
 
         updated_prod = Product.query.get(id)
         if updated_prod is None:
-            return None
+            raise ProductNotFoundException
             
         if product.name is not None:
             updated_prod.name = product.name
@@ -99,7 +99,7 @@ class ProductService:
         product = Product.query.get(id)
 
         if product is None:
-            return None
+            raise ProductNotFoundException
         
         db.session.delete(product)
         db.session.commit()
@@ -113,13 +113,22 @@ class ProductService:
 
             if updated_prod is None:
                 db.session.rollback()
-                return 404
+                raise ProductNotFoundException                  
 
             if updated_prod.quantity < product['quantity']:
                 db.session.rollback()
-                return 400
+                raise InvalidQuantityException
             updated_prod.quantity -= product['quantity']
             
         db.session.commit()
 
-        return 200
+
+class ProductNotFoundException(Exception):
+    def __init__(self, message : str, status_code : int):
+        message = "No product with such ID."
+        status_code = 404
+
+class InvalidQuantityException(Exception):
+    def __init__(self, message : str, status_code : int):
+        message = "Order exceeds available quantity"
+        status_code = 400
