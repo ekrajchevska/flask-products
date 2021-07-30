@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
 
 # Globally accessible libraries
 db = SQLAlchemy()
 ma = Marshmallow()
+migrate = Migrate(db)
 
 def init_app(testing=False):
 
@@ -19,6 +21,7 @@ def init_app(testing=False):
     # Initialize plugins
     db.init_app(app)
     ma.init_app(app)
+    migrate.init_app(app, db)
 
     # Register within app context
     with app.app_context():
