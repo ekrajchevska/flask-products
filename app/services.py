@@ -122,6 +122,34 @@ class ProductService:
             
         db.session.commit()
 
+    def add_categories(self, product_id : int, categories_ids : list):
+        product = product = Product.query.get(product_id)
+        if product is None:
+            raise ProductNotFoundException
+
+        for category_id in categories_ids:
+            category = Category.query.get(category_id)
+            if category is None:
+                raise CategoryNotFoundException
+            product.categories.append(category)
+
+        db.session.commit()
+
+
+class CategoryService:
+
+    def new_category(self, name : str):
+        new_category = Category(name)
+        db.session.add(new_category)
+        db.session.commit()
+
+        return category_schema.jsonify(new_category)
+
+    def get_all_categories(self):
+        all_categories = Category.query.all()
+        return categories_schema.jsonify(all_categories)
+
+
 
 class ProductNotFoundException(Exception):
     def __init__(self, message : str, status_code : int):
@@ -132,3 +160,10 @@ class InvalidQuantityException(Exception):
     def __init__(self, message : str, status_code : int):
         message = "Order exceeds available quantity"
         status_code = 400
+
+class CategoryNotFoundException(Exception):
+    def __init__(self, message : str, status_code : int):
+        message = "No category with such ID."
+        status_code = 404
+
+

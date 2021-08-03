@@ -37,6 +37,13 @@ class ProductSchema(ma.Schema):
 product_schema = ProductSchema()
 products_schema = ProductSchema(many=True)
 
+class CategorySchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name')
+
+category_schema = CategorySchema()
+categories_schema = CategorySchema(many=True)
+
 
 @dataclass
 class ProductDTO:

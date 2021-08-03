@@ -7,6 +7,7 @@ from .services import *
 
 
 product_service = ProductService()
+category_service = CategoryService()
 
 @app.route('/hello', methods=['GET'])
 def hello():
@@ -84,7 +85,32 @@ def buy_products():
     
     return Response(status=200)
 
+@app.route('/category', methods=['POST'])
+def create_category():
+    
+    try:
+        name = request.json['name']
+        new_category = category_service.new_category(name)
 
+    except (KeyError):  
+        raise InvalidAPIUsage("Invalid category creation. Please specify all fields.", 400)  
+
+    return new_category
+
+
+@app.route('/categories', methods=['GET'])
+def get_categories():
+    categories = category_service.get_all_categories()
+    return categories
+
+
+@app.route('/product-categories', methods=['PUT'])
+def add_categories_to_products():
+    product_id = request.json['product_id']
+    categories_ids = request.json['categories_id']
+    product_service.add_categories(product_id, categories_ids)
+
+    return Response(status=200)
 
 # Exceptions
 
