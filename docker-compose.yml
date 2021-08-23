@@ -1,14 +1,16 @@
-version: '2.1'
+version: '3.5'
 services:
     postgres:
         restart: always
         image: postgres:10
         env_file:
-            - db-vars.env
+            - db-config.env
         volumes:
             - db-data:/var/lib/postgresql/data
         ports:
-            - "5432:5432"
+            - "5433:5432"
+        networks:
+            - products_network
     app:
         restart: always
         build: .
@@ -20,6 +22,13 @@ services:
         depends_on: 
             - postgres
         # entrypoint: ["python", "app.py"]
+        networks: 
+            - products_network
+
+networks:
+  products_network:
+    external:
+      name: project_network
 
 volumes:
   db-data:

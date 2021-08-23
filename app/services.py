@@ -11,7 +11,6 @@ from app import db
 # /buy-products i naveduvas (so ime probs) koi produkti gi sakash
 # na tie sto se kupuvaat da im se namali quantity 
 
-
 class ProductService:
 
     def create_product(self, product : ProductDTO):
