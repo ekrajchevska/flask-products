@@ -2,21 +2,26 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
+from werkzeug.routing import Rule
+
 
 # Globally accessible libraries
 db = SQLAlchemy()
 ma = Marshmallow()
 migrate = Migrate(db)
 
+
 def init_app(testing=False):
 
     """Initialize the core application from a config file in the /instance folder."""
-    app = Flask(__name__, instance_relative_config=True)    
+    app = Flask(__name__, instance_relative_config=True)
 
-    if testing :
-        app.config.from_pyfile('config_testing.py')
+    if testing:
+        app.config.from_pyfile("config_testing.py")
     else:
-        app.config.from_pyfile('config.py')
+        app.config.from_pyfile("config.py")
+
+    app.url_rule_class = lambda path, **options: Rule("/products-api" + path, **options)
 
     # Initialize plugins
     db.init_app(app)
@@ -25,7 +30,8 @@ def init_app(testing=False):
 
     # Register within app context
     with app.app_context():
-        from . import routes   
-        db.create_all()         
+        from . import routes
+
+        db.create_all()
 
         return app

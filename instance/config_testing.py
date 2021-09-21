@@ -1,6 +1,6 @@
 import os
 
-file_path = os.path.abspath(os.getcwd())+"database.db"
-SQLALCHEMY_DATABASE_URI = 'sqlite:///'+file_path
+file_path = os.path.abspath(os.getcwd()) + "database.db"
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + file_path
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 TESTING = True

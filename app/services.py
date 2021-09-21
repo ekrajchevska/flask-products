@@ -1,19 +1,20 @@
 from .models import *
 from app import db
+from .exceptions import *
 
 # da ima transactional metod
 
 # da se kreira uste edna tabela kategorija i tagovi (many-to-many so product)
-# da moze da se dodade kategorija (edna ili povekje) na produktive 
+# da moze da se dodade kategorija (edna ili povekje) na produktive
 # ----- isto i so tag
-# da razgledam Flask Migrations (kje uspee i so db.create_all da gi kreira ama ne se prai taka :) ) 
+# da razgledam Flask Migrations (kje uspee i so db.create_all da gi kreira ama ne se prai taka :) )
 
 # /buy-products i naveduvas (so ime probs) koi produkti gi sakash
-# na tie sto se kupuvaat da im se namali quantity 
+# na tie sto se kupuvaat da im se namali quantity
+
 
 class ProductService:
-
-    def create_product(self, product : ProductDTO):
+    def create_product(self, product: ProductDTO):
         """[summary]
 
         Args:
@@ -23,13 +24,14 @@ class ProductService:
             obj: [the newly created object in json-format]
         """
 
-        new_product = Product(product.name, product.description, product.price, product.quantity)
+        new_product = Product(
+            product.name, product.description, product.price, product.quantity
+        )
 
         db.session.add(new_product)
         db.session.commit()
 
         return product_schema.jsonify(new_product)
-
 
     def get_all_products(self):
         """[summary]
@@ -40,8 +42,7 @@ class ProductService:
         all_products = Product.query.all()
         return products_schema.jsonify(all_products)
 
-    
-    def get_product_by_id(self, id : int):
+    def get_product_by_id(self, id: int):
         """[summary]
 
         Args:
@@ -50,13 +51,12 @@ class ProductService:
         Returns:
             obj: [the product object in json-format]
         """
-        
+
         product = Product.query.get(id)
 
         return product_schema.jsonify(product)
 
-    
-    def update_product(self, id : int, product : ProductDTO):
+    def update_product(self, id: int, product: ProductDTO):
         """[summary]
 
         Args:
@@ -71,7 +71,7 @@ class ProductService:
         updated_prod = Product.query.get(id)
         if updated_prod is None:
             raise ProductNotFoundException
-            
+
         if product.name is not None:
             updated_prod.name = product.name
         if product.description is not None:
@@ -85,8 +85,7 @@ class ProductService:
 
         return product_schema.jsonify(updated_prod)
 
-
-    def delete_product(self, id : int):
+    def delete_product(self, id: int):
         """[summary]
 
         Args:
@@ -99,29 +98,28 @@ class ProductService:
 
         if product is None:
             raise ProductNotFoundException
-        
+
         db.session.delete(product)
         db.session.commit()
 
         return product_schema.jsonify(product)
 
-
-    def buy_products(self, products : list):
+    def buy_products(self, products: list):
         for product in products:
-            updated_prod = Product.query.get(product['id'])
+            updated_prod = Product.query.get(product["id"])
 
             if updated_prod is None:
                 db.session.rollback()
-                raise ProductNotFoundException                  
+                raise ProductNotFoundException
 
-            if updated_prod.quantity < product['quantity']:
+            if updated_prod.quantity < product["quantity"]:
                 db.session.rollback()
                 raise InvalidQuantityException
-            updated_prod.quantity -= product['quantity']
-            
+            updated_prod.quantity -= product["quantity"]
+
         db.session.commit()
 
-    def add_categories(self, product_id : int, categories_ids : list):
+    def add_categories(self, product_id: int, categories_ids: list):
         product = product = Product.query.get(product_id)
         if product is None:
             raise ProductNotFoundException
@@ -136,8 +134,7 @@ class ProductService:
 
 
 class CategoryService:
-
-    def new_category(self, name : str):
+    def new_category(self, name: str):
         new_category = Category(name)
         db.session.add(new_category)
         db.session.commit()
@@ -147,22 +144,3 @@ class CategoryService:
     def get_all_categories(self):
         all_categories = Category.query.all()
         return categories_schema.jsonify(all_categories)
-
-
-
-class ProductNotFoundException(Exception):
-    def __init__(self, message : str, status_code : int):
-        message = "No product with such ID."
-        status_code = 404
-
-class InvalidQuantityException(Exception):
-    def __init__(self, message : str, status_code : int):
-        message = "Order exceeds available quantity"
-        status_code = 400
-
-class CategoryNotFoundException(Exception):
-    def __init__(self, message : str, status_code : int):
-        message = "No category with such ID."
-        status_code = 404
-
-
