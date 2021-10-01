@@ -11,6 +11,18 @@ services:
             - "5433:5432"
         networks:
             - products_network
+
+    mongodb:
+        restart: always
+        image: mongo
+        container_name: mongodb
+        volumes:
+            - mongo-data:/data/db
+        ports:
+            - "27018:27017"
+        networks:
+            - products_network
+
     app:
         restart: always
         build: .
@@ -21,6 +33,7 @@ services:
             - .:/project
         depends_on: 
             - postgres
+            - mongodb
         # entrypoint: ["python", "app.py"]
         networks: 
             - products_network
@@ -32,4 +45,6 @@ networks:
 
 volumes:
   db-data:
+    driver: local
+  mongo-data:
     driver: local

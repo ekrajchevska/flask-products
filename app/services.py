@@ -1,6 +1,7 @@
 from .models import *
-from app import db
+from app import db, doc_db
 from .exceptions import *
+from bson.objectid import ObjectId
 
 # da ima transactional metod
 
@@ -33,6 +34,9 @@ class ProductService:
 
         return product_schema.jsonify(new_product)
 
+    def create_product_doc(self, product):
+        doc_db.products.insert_one(product)
+
     def get_all_products(self):
         """[summary]
 
@@ -41,6 +45,9 @@ class ProductService:
         """
         all_products = Product.query.all()
         return products_schema.jsonify(all_products)
+
+    def get_all_docs(self):
+        return doc_db.products.find({})
 
     def get_product_by_id(self, id: int):
         """[summary]
@@ -55,6 +62,9 @@ class ProductService:
         product = Product.query.get(id)
 
         return product_schema.jsonify(product)
+
+    def get_product_doc_by_id(self, id: ObjectId):
+        return doc_db.products.find_one({"_id": id})
 
     def update_product(self, id: int, product: ProductDTO):
         """[summary]
@@ -85,6 +95,30 @@ class ProductService:
 
         return product_schema.jsonify(updated_prod)
 
+    def update_product_doc(self, product):
+        filter = {"name": product["name"]}
+
+        try:
+            if product["description"] is not None:
+                new_val = {"$set": {"description": product["description"]}}
+                doc_db.products.update_one(filter, new_val)
+        except KeyError:
+            pass
+
+        try:
+            if product["price"] is not None:
+                new_val = {"$set": {"price": product["price"]}}
+                doc_db.products.update_one(filter, new_val)
+        except KeyError:
+            pass
+
+        try:
+            if product["quantity"] is not None:
+                new_val = {"$set": {"quantity": product["quantity"]}}
+                doc_db.products.update_one(filter, new_val)
+        except KeyError:
+            pass
+
     def delete_product(self, id: int):
         """[summary]
 
@@ -103,6 +137,9 @@ class ProductService:
         db.session.commit()
 
         return product_schema.jsonify(product)
+
+    def delete_product_doc(self, query):
+        doc_db.products.delete_one(query)
 
     def buy_products(self, products: list):
         for product in products:
