@@ -1,9 +1,10 @@
-from flask import request, jsonify
+from flask import request
 from flask.wrappers import Response
 from flask import current_app as app
 from marshmallow.fields import String
-from ..exceptions import *
-from ..services import *
+from app.auth import token_required
+from app.exceptions import *
+from app.services import *
 from bson import json_util
 import json
 
@@ -12,6 +13,7 @@ product_service = ProductService()
 
 
 @app.route("/document/create", methods=["POST"])
+@token_required
 def create_product_document():
 
     try:
@@ -57,12 +59,14 @@ def get_doc_by_id(id: String):
 
 
 @app.route("/document/product", methods=["PUT"])
+@token_required
 def update_product_document():
     product_service.update_product_doc(request.json)
     return Response(status=202)
 
 
 @app.route("/document/product", methods=["DELETE"])
+@token_required
 def delete_product_document():
     product_service.delete_product_doc(request.json)
     return Response(status=202)

@@ -1,6 +1,6 @@
-from .models import *
+from app.models import *
 from app import db, doc_db
-from .exceptions import *
+from app.exceptions import *
 from bson.objectid import ObjectId
 
 # da ima transactional metod

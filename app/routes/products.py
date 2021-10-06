@@ -1,10 +1,10 @@
 from flask import request, jsonify
 from flask import current_app as app
 from flask.wrappers import Response
-from ..models import *
-from ..services import *
-from .. import auth
-from ..exceptions import *
+from app.models import *
+from app.services import *
+from app import auth
+from app.exceptions import *
 
 
 product_service = ProductService()
@@ -18,14 +18,8 @@ def hello():
 
 
 @app.route("/create", methods=["POST"])
+@auth.token_required
 def create():
-
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
 
     try:
         product_dto = ProductDTO(
@@ -57,13 +51,8 @@ def get_product_by_id(id: int):
 
 
 @app.route("/product/<int:id>", methods=["PUT"])
+@auth.token_required
 def update_product(id: int):
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
 
     data = request.get_json()
     name = description = price = quantity = None
@@ -86,14 +75,8 @@ def update_product(id: int):
 
 
 @app.route("/product/<int:id>", methods=["DELETE"])
+@auth.token_required
 def delete_product(id: int):
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
-
     try:
         del_product = product_service.delete_product(id)
     except ProductNotFoundException as e:
@@ -103,14 +86,8 @@ def delete_product(id: int):
 
 
 @app.route("/buy-products", methods=["POST"])
+@auth.token_required
 def buy_products():
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
-
     bucket = list(request.get_json())
     try:
         product_service.buy_products(bucket)
