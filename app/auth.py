@@ -8,6 +8,14 @@ import os
 def token_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
+        """[summary]
+
+        Args:
+            None
+
+        Returns:
+            [function]: [decorator responsible for checking and processing access tokens]
+        """
 
         token = None
 
@@ -26,6 +34,15 @@ def token_required(f):
 
 
 def validate_access_token(token: str):
+    """[summary]
+
+    Args:
+        token (str): [the access token of the logged user]
+
+    Returns:
+        [email]: [decoded email from the token]
+    """
+
     try:
         payload = jwt.decode(
             token, os.getenv("secret"), algorithms=[os.getenv("algorithm")]
