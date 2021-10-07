@@ -12,7 +12,7 @@ postgres_user = os.getenv("POSTGRES_USER")
 postgres_password = os.getenv("POSTGRES_PASSWORD")
 postgres_host = os.getenv("POSTGRES_HOST")
 postgres_port = os.getenv("POSTGRES_PORT")
-postgres_database = os.getenv("POSTGRES_DATABASE")
+postgres_database = os.getenv("POSTGRES_DATABASE_FLASK")
 SQLALCHEMY_DATABASE_URI = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}"
 
 # SQLALCHEMY_DATABASE_URI = (
