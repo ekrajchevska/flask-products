@@ -2,7 +2,7 @@ from jose import jwt, JWTError
 from .exceptions import InvalidAPIUsage
 from functools import wraps
 from flask import request, jsonify
-import os
+from app.read_env import SECRET_KEY, ALGORITHM
 
 
 def token_required(f):
@@ -44,9 +44,7 @@ def validate_access_token(token: str):
     """
 
     try:
-        payload = jwt.decode(
-            token, os.getenv("secret"), algorithms=[os.getenv("algorithm")]
-        )
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("email")
         if email is None:
             raise InvalidAPIUsage("Invalid token!", 401)
