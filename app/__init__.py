@@ -3,12 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from werkzeug.routing import Rule
+from instance.config import client
+import logging
 
 
 # Globally accessible libraries
 db = SQLAlchemy()
 ma = Marshmallow()
+doc_db = client.flaskproducts
 migrate = Migrate(db)
+logging.basicConfig(level=logging.INFO)
 
 
 def init_app(testing=False):
@@ -30,8 +34,10 @@ def init_app(testing=False):
 
     # Register within app context
     with app.app_context():
-        from . import routes
+        from app.routes import products, categories, document
 
         db.create_all()
+        logging.info(f"MongoDbs:  {client.list_database_names()}")
+        logging.info(f"Collection: {doc_db.list_collection_names()}")
 
         return app

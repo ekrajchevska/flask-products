@@ -1,14 +1,13 @@
 from flask import request, jsonify
 from flask import current_app as app
 from flask.wrappers import Response
-from .models import *
-from .services import *
-from . import auth
-from .exceptions import *
+from app.models import *
+from app.services import *
+from app import auth
+from app.exceptions import *
 
 
 product_service = ProductService()
-category_service = CategoryService()
 
 # http://localhost:8081/products-api
 
@@ -19,14 +18,8 @@ def hello():
 
 
 @app.route("/create", methods=["POST"])
+@auth.token_required
 def create():
-
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
 
     try:
         product_dto = ProductDTO(
@@ -58,13 +51,8 @@ def get_product_by_id(id: int):
 
 
 @app.route("/product/<int:id>", methods=["PUT"])
+@auth.token_required
 def update_product(id: int):
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
 
     data = request.get_json()
     name = description = price = quantity = None
@@ -87,14 +75,8 @@ def update_product(id: int):
 
 
 @app.route("/product/<int:id>", methods=["DELETE"])
+@auth.token_required
 def delete_product(id: int):
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
-
     try:
         del_product = product_service.delete_product(id)
     except ProductNotFoundException as e:
@@ -104,63 +86,14 @@ def delete_product(id: int):
 
 
 @app.route("/buy-products", methods=["POST"])
+@auth.token_required
 def buy_products():
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
-
     bucket = list(request.get_json())
     try:
         product_service.buy_products(bucket)
 
     except (ProductNotFoundException, InvalidQuantityException) as e:
         raise InvalidAPIUsage(e.message, e.status_code)
-
-    return Response(status=200)
-
-
-@app.route("/category", methods=["POST"])
-def create_category():
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
-
-    try:
-        name = request.json["name"]
-        new_category = category_service.new_category(name)
-
-    except (KeyError):
-        raise InvalidAPIUsage(
-            "Invalid category creation. Please specify all fields.", 400
-        )
-
-    return new_category
-
-
-@app.route("/categories", methods=["GET"])
-def get_categories():
-    categories = category_service.get_all_categories()
-    return categories
-
-
-@app.route("/product-categories", methods=["PUT"])
-def add_categories_to_products():
-    auth_header = request.headers.get("Authorization")
-    try:
-        token = auth_header.split()[1]
-    except AttributeError:
-        raise InvalidAPIUsage("Access denied!", 401)
-    auth.validate_access_token(token)
-
-    product_id = request.json["product_id"]
-    categories_ids = request.json["categories_id"]
-    product_service.add_categories(product_id, categories_ids)
 
     return Response(status=200)
 

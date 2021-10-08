@@ -3,5 +3,6 @@ db-vars.env
 .pytest_cache
 __pycache__
 app.py
+.env
 
 database.db
