@@ -12,9 +12,9 @@ spec:
   github:
     products-webhook:      # imeto na github webhook (listenerot), eventName actually (custom, kako sakame)
       owner: stefankochev
-      repository: argo-test
+      repository: flask-products
       webhook:
-        endpoint: /argo-test
+        endpoint: /products-ms
         port: "12000"
         method: POST
         url: http://localhost
