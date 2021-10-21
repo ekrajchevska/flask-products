@@ -26,21 +26,3 @@ spec:
       insecure: true
       active: true
       contentType: json
-
-    auth-webhook:      # imeto na github webhook (listenerot), eventName actually (custom, kako sakame)
-      owner: ekrajchevska
-      repository: fastapi-auth
-      webhook:
-        endpoint: /auth-ms
-        port: "12000"
-        method: POST
-        url: http://localhost
-      events:
-        - "*"
-      apiToken:
-        name: github-access
-        key: token
-      insecure: true
-      active: true
-      contentType: json
-
