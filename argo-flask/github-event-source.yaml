@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: EventSource     # tuka definirame event source, vo slucajov github webhook (listener)
 metadata:
   name: flask-github-event-source 
-  namespace: argo-events
+  namespace: argo-events 
 spec:
   service:
     ports:
