@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: flask-products-lb
+  namespace: staging
 spec:
   selector:
     app: flask-products
