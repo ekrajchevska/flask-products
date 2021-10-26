@@ -14,9 +14,9 @@ metadata:
 spec:
   dependencies:   # dependency za sensor-ot (sensorot slusa na vakvite eventi -> subscribe), tuka se def. event-sources, moze pojke
   - name: github
-    eventSourceName: github-event-source
+    eventSourceName: flask-github-event-source 
     eventName: products-webhook
-    filters:    # bez filter -> commit loop
+    filters:    # bez filter --> commit loop
       data:   
         - path: body.commits.0.message
           type: string
