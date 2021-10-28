@@ -26,6 +26,7 @@ SQLALCHEMY_DATABASE_URI = f"postgresql://{postgres_user}:{postgres_password}@{po
 #   "postgresql://postgres:admin@host.docker.internal/flask-products"
 # )
 # SQLALCHEMY_DATABASE_URI = "sqlite:///" + file_path
+
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
