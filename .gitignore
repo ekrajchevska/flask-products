@@ -4,5 +4,4 @@ db-vars.env
 __pycache__
 app.py
 .env
-
 database.db

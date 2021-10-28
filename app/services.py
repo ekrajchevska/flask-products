@@ -3,16 +3,6 @@ from app import db, doc_db
 from app.exceptions import *
 from bson.objectid import ObjectId
 
-# da ima transactional metod
-
-# da se kreira uste edna tabela kategorija i tagovi (many-to-many so product)
-# da moze da se dodade kategorija (edna ili povekje) na produktive
-# ----- isto i so tag
-# da razgledam Flask Migrations (kje uspee i so db.create_all da gi kreira ama ne se prai taka :) )
-
-# /buy-products i naveduvas (so ime probs) koi produkti gi sakash
-# na tie sto se kupuvaat da im se namali quantity
-
 
 class ProductService:
     def create_product(self, product: ProductDTO):
